@@ -9,15 +9,30 @@ import de.heikoseeberger.akkahttpjson4s.Json4sSupport._
 
 import scala.concurrent.ExecutionContext
 
+case class LogCriteria(message: String)
+
 trait LogRoute extends Repository {
   implicit val serialization = jackson.Serialization
   implicit val formats = DefaultFormats
 
   def getLogs(implicit exec: ExecutionContext) =
     path("logs") {
-      parameters('size.as[Int]) { size =>
-        onSuccess(readAll(size)) { resp =>
-          complete(resp)
+      get {
+        parameters('size.as[Int]) { size =>
+          onSuccess(readAll(size)) { resp =>
+            complete(resp)
+          }
+        }
+      }
+    }
+
+  def findByMessage(implicit exec: ExecutionContext) =
+    path("logs") {
+      post {
+        entity(as[LogCriteria]) { criteria =>
+          onSuccess(readByMessage(criteria.message)) { resp =>
+            complete(resp)
+          }
         }
       }
     }

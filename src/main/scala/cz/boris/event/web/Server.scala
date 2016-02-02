@@ -19,7 +19,7 @@ class Server extends UploadRoute with LogRoute {
   implicit val exec = system.dispatcher
   implicit val timeout = Timeout(5.seconds)
 
-  def routes = upload ~ getLogs
+  def routes = upload ~ getLogs ~ findByMessage
 
   implicit def globalErrorHandler: ExceptionHandler = ExceptionHandler {
     case ex: Exception =>

@@ -36,7 +36,7 @@ trait Repository {
   def persist(events: Seq[LogEvent])(implicit exec: ExecutionContext): Future[MultiBulkWriteResult] = {
     val collection = dbWithCollection
     val bulkDocs = events.map(implicitly[collection.ImplicitlyDocumentProducer](_))
-    collection.bulkInsert(ordered = true)(bulkDocs: _*)
+    collection.bulkInsert(ordered = false)(bulkDocs: _*)
   }
 
   def readAll(limit: Int)(implicit exec: ExecutionContext): Future[List[LogEvent]] = {
@@ -45,6 +45,14 @@ trait Repository {
       .find(query)
       .cursor[LogEvent]()
       .collect[List](limit)
+  }
+
+  def readByMessage(message: String)(implicit exec: ExecutionContext): Future[List[LogEvent]] = {
+    val query = BSONDocument("message" -> BSONDocument("$regex" -> s".*$message.*"))
+    dbWithCollection
+      .find(query)
+      .cursor[LogEvent]()
+      .collect[List](25)
   }
 
   private def dbWithCollection = {

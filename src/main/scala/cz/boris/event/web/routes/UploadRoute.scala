@@ -22,7 +22,7 @@ trait UploadRoute extends FileValidator
           val result = source
             .via(Framing.delimiter(ByteString("\n"), 2 << 12))
             .map(_.utf8String)
-            .via(mapToLogEvent)
+            .via(balancedMap)
             .grouped(2000)
             .via(persistEvent)
             .runWith(Sink.last)
