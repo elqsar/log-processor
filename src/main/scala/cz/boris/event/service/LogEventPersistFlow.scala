@@ -10,6 +10,6 @@ import scala.concurrent.{ExecutionContext, Future}
 trait LogEventPersistFlow extends Repository {
 
   def persistEvent(implicit exec: ExecutionContext): Flow[Seq[LogEvent], MultiBulkWriteResult, Unit] =
-    Flow[Seq[LogEvent]].mapAsync(4)(events => persist(events))
+    Flow[Seq[LogEvent]].mapAsync(8)(events => persist(events))
 
 }

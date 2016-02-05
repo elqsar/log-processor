@@ -1,37 +1,16 @@
 package cz.boris.event.repository
 
-import cz.boris.event.config.Configuration
 import cz.boris.event.model.LogEvent
-import reactivemongo.api.collections.bson.BSONCollection
-import reactivemongo.api.commands.{MultiBulkWriteResult, WriteResult}
-import reactivemongo.api.{MongoConnection, FailoverStrategy, MongoDriver}
-import reactivemongo.bson.BSONDocument
-
-import scala.concurrent.duration._
-import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.ExecutionContext.Implicits.global
-
 import cz.boris.event.model.readers.Readers._
 import cz.boris.event.model.writers.Writers._
+import reactivemongo.api.collections.bson.BSONCollection
+import reactivemongo.api.commands.MultiBulkWriteResult
+import reactivemongo.bson.BSONDocument
 
-import scala.util.{Failure, Success}
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{ExecutionContext, Future}
 
 trait Repository {
-  val collectionName = "logevents"
-  val dbName = "logs"
-
-  val driver = new MongoDriver()
-  val connection:MongoConnection = MongoConnection.parseURI(Configuration.dbHost).map { parsed =>
-    driver.connection(parsed)
-  } match {
-    case Success(conn) => conn
-    case Failure(ex) => throw new RuntimeException(s"Could not establish the connection: $ex")
-  }
-  val strategy = FailoverStrategy(
-    initialDelay = 15.seconds,
-    retries = 5,
-    delayFactor = attempt => 1 + attempt
-  )
 
   def persist(events: Seq[LogEvent])(implicit exec: ExecutionContext): Future[MultiBulkWriteResult] = {
     val collection = dbWithCollection
@@ -56,7 +35,7 @@ trait Repository {
   }
 
   private def dbWithCollection = {
-    val db = connection(dbName, failoverStrategy = strategy)
-    db[BSONCollection](collectionName)
+    val db = Database.connection(Database.dbName, failoverStrategy = Database.strategy)
+    db[BSONCollection](Database.collectionName)
   }
 }
