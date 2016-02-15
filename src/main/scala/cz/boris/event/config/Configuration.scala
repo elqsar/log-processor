@@ -11,4 +11,6 @@ object Configuration {
   val dbHost = config.getString("database.url")
   val dbPort = config.getInt("database.port")
 
+  val logPattern = config.getString("processor.log-pattern")
+
 }

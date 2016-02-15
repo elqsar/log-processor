@@ -30,7 +30,7 @@ with LogEventTransformFlow {
     )
 
     Source(List(source))
-      .via(balancedMap)
+      .via(balancedMapToLogEvent)
       .runWith(TestSink.probe[LogEvent])
       .request(1)
       .expectNext(expectedResult)
