@@ -10,7 +10,7 @@ import reactivemongo.bson.BSONDocument
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
-trait Repository {
+trait LogRepository {
 
   def persist(events: Seq[LogEvent])(implicit exec: ExecutionContext): Future[MultiBulkWriteResult] = {
     val collection = dbWithCollection

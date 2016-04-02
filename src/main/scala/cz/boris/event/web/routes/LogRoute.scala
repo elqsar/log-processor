@@ -3,7 +3,7 @@ package cz.boris.event.web.routes
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
-import cz.boris.event.repository.Repository
+import cz.boris.event.repository.LogRepository
 import org.json4s.{DefaultFormats, jackson}
 import de.heikoseeberger.akkahttpjson4s.Json4sSupport._
 
@@ -11,7 +11,7 @@ import scala.concurrent.ExecutionContext
 
 case class LogCriteria(message: String)
 
-trait LogRoute extends Repository {
+trait LogRoute extends LogRepository {
   implicit val serialization = jackson.Serialization
   implicit val formats = DefaultFormats
 
